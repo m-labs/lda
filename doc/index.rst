@@ -1,3 +1,9 @@
+Welcome to LDA's documentation!
+===============================
+
+General instructions
+--------------------
+
 On Linux, you need to give your user access to the USB device.
 
 You can do that by creating a file under ``/etc/udev/rules.d/`` named
@@ -5,7 +11,7 @@ You can do that by creating a file under ``/etc/udev/rules.d/`` named
 
     SUBSYSTEM=="usb", ATTR{idVendor}=="041f", MODE="0666"
 
-Then you need to tell udev to reload its rules::
+Then you might need to tell udev to reload its rules::
 
     $ sudo invoke-rc.d udev reload
 
@@ -19,3 +25,25 @@ The serial number must contain exactly 5 digits, prepend it with the necessary n
 Also, the ``SN:`` prefix is mandatory.
 
 You can choose the LDA model with the ``-P`` parameter. The default is LDA-102.
+
+API
+---
+
+.. automodule:: lda.driver
+    :members:
+
+
+ARTIQ controller
+----------------
+
+.. argparse::
+   :ref: lda.aqctl_lda.get_argparser
+   :prog: aqctl_lda
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
