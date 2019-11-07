@@ -1,8 +1,8 @@
 import unittest
 import sys
 
-from artiq.test.hardware_testbench import GenericControllerCase, ControllerCase
-from lda.driver import Ldasim, dB
+from sipyco.test.generic_rpc import GenericRPCCase
+from lda.driver import dB
 
 
 class GenericLdaTest:
@@ -17,27 +17,10 @@ class GenericLdaTest:
                 self.assertEqual(i, j)
 
 
-class TestLda(ControllerCase, GenericLdaTest):
+class TestLdaSim(GenericRPCCase, GenericLdaTest):
     def setUp(self):
-        ControllerCase.setUp(self)
-        self.start_controller("lda")
-        self.cont = self.device_mgr.get("lda")
-
-
-class TestLdaSim(GenericControllerCase, GenericLdaTest):
-    def get_device_db(self):
-        return {
-            "lda": {
-                "type": "controller",
-                "host": "::1",
-                "port": 3253,
-                "command": (sys.executable.replace("\\", "\\\\")
+        GenericRPCCase.setUp(self)
+        command = (sys.executable.replace("\\", "\\\\")
                             + " -m lda.aqctl_lda "
-                            + "-p {port} --simulation")
-            }
-        }
-
-    def setUp(self):
-        GenericControllerCase.setUp(self)
-        self.start_controller("lda")
-        self.cont = self.device_mgr.get("lda")
+                            + "-p 3253 --simulation")
+        self.cont = self.start_server("lda", command, 3253)

@@ -2,8 +2,8 @@
 
 import argparse
 
-from artiq.protocols.pc_rpc import simple_server_loop
-from artiq.tools import *
+from sipyco.pc_rpc import simple_server_loop
+from sipyco import common_args
 from lda.driver import Lda, Ldasim
 
 
@@ -13,7 +13,7 @@ def get_argparser():
     parser.add_argument("-P", "--product", default="LDA-102",
                         help="product type (default: %(default)s)",
                         choices=["LDA-102", "LDA-602"])
-    simple_network_args(parser, 3253)
+    common_args.simple_network_args(parser, 3253)
     parser.add_argument("-d", "--device", default=None,
                         help="USB serial number of the device. "
                              "The serial number is written on a sticker under "
@@ -23,20 +23,20 @@ def get_argparser():
                              "available device will be used.")
     parser.add_argument("--simulation", action="store_true",
                         help="Put the driver in simulation mode.")
-    add_common_args(parser)
+    common_args.verbosity_args(parser)
     return parser
 
 
 def main():
     args = get_argparser().parse_args()
-    init_logger(args)
+    common_args.init_logger_from_args(args)
     if args.simulation:
         lda = Ldasim()
     else:
         lda = Lda(args.device, args.product)
     try:
         simple_server_loop({"lda": lda},
-                           bind_address_from_args(args), args.port)
+                           common_args.bind_address_from_args(args), args.port)
     finally:
         lda.close()
 
