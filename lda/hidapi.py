@@ -13,10 +13,10 @@ if hidapi_lib_path is None:
         os.environ["PATH"] += ";{}".format(dir)
 
     for n in "hidapi-libusb hidapi-hidraw hidapi".split():
-        path = ctypes.util.find_library(n)
-        if path:
+        hidapi_lib_path = ctypes.util.find_library(n)
+        if hidapi_lib_path:
             break
-    if not path:
+    if not hidapi_lib_path:
         raise ImportError("no hidapi library found")
 
 hidapi = ctypes.CDLL(hidapi_lib_path)
