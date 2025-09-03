@@ -3,6 +3,7 @@
 import argparse
 
 from sipyco.pc_rpc import simple_server_loop
+from sipyco.tools import SimpleSSLConfig
 from sipyco import common_args
 from lda.driver import Lda, Ldasim
 
@@ -13,7 +14,7 @@ def get_argparser():
     parser.add_argument("-P", "--product", default="LDA-102",
                         help="product type (default: %(default)s)",
                         choices=["LDA-102", "LDA-602"])
-    common_args.simple_network_args(parser, 3253)
+    common_args.simple_network_args(parser, 3253, ssl=True)
     parser.add_argument("-d", "--device", default=None,
                         help="USB serial number of the device. "
                              "The serial number is written on a sticker under "
@@ -30,13 +31,15 @@ def get_argparser():
 def main():
     args = get_argparser().parse_args()
     common_args.init_logger_from_args(args)
+    ssl_config = SimpleSSLConfig(*args.ssl) if args.ssl else None
     if args.simulation:
         lda = Ldasim()
     else:
         lda = Lda(args.device, args.product)
     try:
         simple_server_loop({"lda": lda},
-                           common_args.bind_address_from_args(args), args.port)
+                           common_args.bind_address_from_args(args), args.port,
+                           ssl_config=ssl_config)
     finally:
         lda.close()
 
